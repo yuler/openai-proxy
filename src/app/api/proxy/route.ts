@@ -1,3 +1,5 @@
+import type { NextRequest } from 'next/server'
+
 // refs: https://vercel.com/docs/concepts/functions/edge-functions/edge-functions-api
 export const config = {
   runtime: 'edge', // this is a pre-requisite
@@ -42,13 +44,21 @@ const CORS_HEADERS: Record<string, string> = {
   'access-control-allow-headers': 'Content-Type, Authorization',
 }
 
-export default async function handleRequest(req: Request & { nextUrl?: URL }) {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: CORS_HEADERS,
-    })
-  }
+export async function OPTIONS(req: NextRequest) {
+  return new Response(null, {
+    headers: CORS_HEADERS,
+  })
+}
 
+export async function GET(req: NextRequest) {
+  return handle(req)
+}
+
+export async function POST(req: NextRequest) {
+  return handle(req)
+}
+
+async function handle(req: NextRequest) {
   const { pathname, search } = req.nextUrl ? req.nextUrl : new URL(req.url)
   const url = new URL(pathname + search, 'https://api.openai.com').href
   const headers = pickHeaders(req.headers, ['content-type', 'authorization'])
