@@ -44,25 +44,32 @@ const CORS_HEADERS: Record<string, string> = {
   'access-control-allow-headers': 'Content-Type, Authorization',
 }
 
-export async function OPTIONS(req: NextRequest) {
-  return new Response(null, {
-    headers: CORS_HEADERS,
-  })
-}
+// export async function OPTIONS(req: NextRequest) {
+//   return new Response(null, {
+//     headers: CORS_HEADERS,
+//   })
+// }
 
-export async function GET(req: NextRequest) {
-  return handle(req)
-}
+// export async function GET(req: NextRequest) {
+//   return await handle(req)
+// }
 
-export async function POST(req: NextRequest) {
-  return handle(req)
-}
+// export async function POST(req: NextRequest) {
+//   return await handle(req)
+// }
 
-async function handle(req: NextRequest) {
+export default async function handle(req: NextRequest) {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: CORS_HEADERS,
+    })
+  }
+
   const { pathname, search } = req.nextUrl ? req.nextUrl : new URL(req.url)
   const url = new URL(pathname + search, 'https://api.openai.com').href
   const headers = pickHeaders(req.headers, ['content-type', 'authorization'])
 
+  console.log({ url, headers })
   const res = await fetch(url, {
     body: req.body,
     method: req.method,
