@@ -7,6 +7,10 @@ const nextConfig = {
         destination: '/',
       },
       {
+        source: '/completions',
+        destination: '/api/completions',
+      },
+      {
         source: '/:path*',
         destination: '/api/proxy',
       },
